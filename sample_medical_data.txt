@@ -1,0 +1,21 @@
+# Medibudi Medical Knowledge Base
+
+## Common Cold
+The common cold is a viral infection of your nose and throat (upper respiratory tract). It's usually harmless, although it might not feel that way. Many types of viruses can cause a common cold.
+Symptoms: Runny or stuffy nose, sore throat, cough, congestion, slight body aches or a mild headache, sneezing, low-grade fever, generally feeling unwell (malaise).
+Treatment: There's no cure for the common cold. Most cases get better without treatment within a week or two. Over-the-counter cold medications can help relieve symptoms. Drink plenty of fluids and get plenty of rest.
+
+## Influenza (Flu)
+Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs.
+Symptoms: Fever over 100.4 F (38 C), aching muscles, chills and sweats, headache, dry, persistent cough, fatigue and weakness, nasal congestion, sore throat.
+Treatment: Usually, you'll need nothing more than bed rest and plenty of fluids to treat the flu. But if you have a severe infection or are at higher risk for complications, your doctor may prescribe an antiviral medication to treat the flu.
+
+## Hypertension (High Blood Pressure)
+High blood pressure is a common condition in which the long-term force of the blood against your artery walls is high enough that it may eventually cause health problems, such as heart disease.
+Symptoms: Most people with high blood pressure have no signs or symptoms, even if blood pressure readings reach dangerously high levels.
+Treatment: Lifestyle changes such as eating a heart-healthy diet with less salt, getting regular physical activity, maintaining a healthy weight or losing weight if you're overweight or obese, and limiting the amount of alcohol you drink. Medications may also be prescribed.
+
+## Type 2 Diabetes
+Type 2 diabetes is an impairment in the way the body regulates and uses sugar (glucose) as a fuel. This long-term (chronic) condition results in too much sugar circulating in the bloodstream.
+Symptoms: Increased thirst, frequent urination, increased hunger, unintended weight loss, fatigue, blurred vision, slow-healing sores, frequent infections.
+Treatment: Management includes healthy eating, regular exercise, weight loss, possibly diabetes medication or insulin therapy, and blood sugar monitoring.
