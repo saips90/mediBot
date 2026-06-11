@@ -1,13 +1,30 @@
-from fastapi import FastAPI, HTTPException
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from rag_pipeline import MedibudiRAG
-from fastapi.responses import HTMLResponse, FileResponse
-import os
 
-app = FastAPI(title="Medibudi RAG API")
+from app.api.v1.router import api_router
+from app.core.config import get_settings
+from app.core.logger import get_logger
+from app.rag_pipeline import MedibudiRAG
 
-# Setup CORS
+settings = get_settings()
+logger = get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.rag_pipeline = None
+    try:
+        app.state.rag_pipeline = MedibudiRAG(settings)
+        logger.info("Medibudi RAG Pipeline initialized successfully")
+    except Exception as exc:
+        logger.warning("RAG Pipeline initialization failed. Did you run ingest.py? Error: %s", exc)
+    yield
+
+
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,41 +33,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize RAG on startup (or lazy load)
-rag_pipeline = None
+app.include_router(api_router, prefix=settings.api_v1_prefix)
 
-@app.on_event("startup")
-async def startup_event():
-    global rag_pipeline
-    try:
-        rag_pipeline = MedibudiRAG()
-        print("Medibudi RAG Pipeline initialized successfully.")
-    except Exception as e:
-        print(f"Warning: RAG Pipeline initialization failed. Did you run ingest.py? Error: {e}")
-
-class ChatRequest(BaseModel):
-    message: str
-
-class ChatResponse(BaseModel):
-    reply: str
 
 @app.get("/")
-async def serve_frontend():
-    # Serve the frontend HTML file
-    if os.path.exists("index.html"):
-        return FileResponse("index.html")
-    return HTMLResponse("<h1>Medibudi RAG API</h1><p>index.html not found.</p>")
+async def root():
+    return {
+        "name": settings.app_name,
+        "status": "ok",
+        "docs": "/docs",
+        "chat_endpoint": f"{settings.api_v1_prefix}/chat",
+    }
 
-@app.post("/api/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
-    if not rag_pipeline:
-        raise HTTPException(status_code=500, detail="RAG Pipeline not initialized. Check server logs.")
-    try:
-        reply = rag_pipeline.ask(request.message)
-        return ChatResponse(reply=reply)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "ok",
+        "rag_ready": app.state.rag_pipeline is not None,
+    }
+
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8001)
