@@ -357,7 +357,7 @@ This project reduces hallucination by:
 Additional production improvements:
 
 - Add source citations.
-- Add reranking.
+- Keep reranking enabled and tune `RERANKER_TOP_N` using evaluation data.
 - Add context relevance checks.
 - Add answer faithfulness evaluation.
 - Add guardrails for medical disclaimers.
@@ -465,9 +465,9 @@ Options:
 - Increase retrieval `k`.
 - Use hybrid search.
 - Rewrite the query.
-- Add multi-query retrieval.
+- Use the cross-encoder reranker already included in the pipeline.
+- Add multi-query retrieval for broader recall if needed.
 - Use metadata filters.
-- Add reranking.
 - Improve chunking.
 - Improve document conversion quality.
 
