@@ -11,7 +11,7 @@ load_dotenv(ROOT_DIR / ".env")
 
 
 class Settings(BaseSettings):
-    app_name: str = "Medibudi RAG API"
+    app_name: str = "MediBot RAG API"
     api_v1_prefix: str = "/api"
 
     groq_api_key: str | None = None

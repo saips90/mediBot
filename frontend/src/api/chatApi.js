@@ -12,7 +12,7 @@ export async function sendChatMessage(message) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.detail || 'Unable to get a response from Medibudi.');
+    throw new Error(data.detail || 'Unable to get a response from MediBot.');
   }
 
   return data.reply;

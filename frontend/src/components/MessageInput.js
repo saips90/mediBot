@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 export default function MessageInput({ disabled, onSend }) {
   const [value, setValue] = useState('');
@@ -19,10 +19,17 @@ export default function MessageInput({ disabled, onSend }) {
         style={styles.input}
         value={value}
         onChangeText={setValue}
-        placeholder="Ask Medibudi..."
+        placeholder="Ask MediBot..."
         placeholderTextColor="#64748b"
         editable={!disabled}
         multiline
+        onKeyPress={(event) => {
+          const { nativeEvent } = event;
+          if (Platform.OS === 'web' && nativeEvent.key === 'Enter' && !nativeEvent.shiftKey) {
+            event.preventDefault?.();
+            handleSend();
+          }
+        }}
       />
       <Pressable
         accessibilityLabel="Send message"
@@ -47,28 +54,28 @@ const styles = StyleSheet.create({
     gap: 10,
     borderTopColor: '#e2e8f0',
     borderTopWidth: 1,
-    padding: 12,
     backgroundColor: '#ffffff',
+    padding: 16,
   },
   input: {
     flex: 1,
-    maxHeight: 120,
-    minHeight: 46,
+    maxHeight: 140,
+    minHeight: 50,
     borderColor: '#cbd5e1',
-    borderRadius: 18,
+    borderRadius: 8,
     borderWidth: 1,
     color: '#0f172a',
     fontSize: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
   },
   button: {
     alignItems: 'center',
-    backgroundColor: '#0ea5e9',
-    borderRadius: 18,
-    height: 46,
+    backgroundColor: '#0891b2',
+    borderRadius: 8,
+    height: 50,
     justifyContent: 'center',
-    width: 46,
+    width: 50,
   },
   buttonDisabled: {
     backgroundColor: '#94a3b8',

@@ -1,4 +1,4 @@
-# Medibudi Medical Knowledge Base
+# MediBot Medical Knowledge Base
 
 ## Common Cold
 The common cold is a viral infection of your nose and throat (upper respiratory tract). It's usually harmless, although it might not feel that way. Many types of viruses can cause a common cold.

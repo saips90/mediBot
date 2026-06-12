@@ -24,22 +24,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   bubble: {
-    maxWidth: '82%',
-    borderRadius: 18,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderRadius: 8,
+    maxWidth: '70%',
+    paddingHorizontal: 18,
+    paddingVertical: 13,
   },
   userBubble: {
-    backgroundColor: '#0ea5e9',
-    borderBottomRightRadius: 6,
+    backgroundColor: '#0891b2',
   },
   assistantBubble: {
-    backgroundColor: '#e2e8f0',
-    borderBottomLeftRadius: 6,
+    backgroundColor: '#f1f5f9',
+    borderColor: '#e2e8f0',
+    borderWidth: 1,
   },
   text: {
     fontSize: 16,
-    lineHeight: 22,
+    lineHeight: 24,
   },
   userText: {
     color: '#ffffff',

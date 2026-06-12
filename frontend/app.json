@@ -1,9 +1,8 @@
 {
   "expo": {
-    "name": "Medibudi",
-    "slug": "medibudi-mobile",
+    "name": "MediBot",
+    "slug": "medibot-web",
     "version": "1.0.0",
-    "orientation": "portrait",
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
@@ -12,14 +11,11 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "usesCleartextTraffic": true
-    },
     "web": {
       "bundler": "metro"
-    }
+    },
+    "plugins": [
+      "expo-asset"
+    ]
   }
 }

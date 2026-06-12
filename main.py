@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.core.logger import get_logger
-from app.rag_pipeline import MedibudiRAG
+from app.rag_pipeline import MediBotRAG
 
 settings = get_settings()
 logger = get_logger(__name__)
@@ -16,8 +16,8 @@ logger = get_logger(__name__)
 async def lifespan(app: FastAPI):
     app.state.rag_pipeline = None
     try:
-        app.state.rag_pipeline = MedibudiRAG(settings)
-        logger.info("Medibudi RAG Pipeline initialized successfully")
+        app.state.rag_pipeline = MediBotRAG(settings)
+        logger.info("MediBot RAG Pipeline initialized successfully")
     except Exception as exc:
         logger.warning("RAG Pipeline initialization failed. Did you run ingest.py? Error: %s", exc)
     yield

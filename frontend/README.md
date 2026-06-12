@@ -1,6 +1,6 @@
-# Medibudi Frontend
+# MediBot Frontend
 
-Expo React Native chat app for the Medibudi backend RAG API.
+Expo web chat application for the MediBot backend RAG API.
 
 ## Backend dependency
 
@@ -21,14 +21,13 @@ The backend exposes:
 ```bash
 npm install
 cp .env.example .env
-npm start
+npm run web
 ```
 
-Set `EXPO_PUBLIC_API_BASE_URL` in `.env` based on where the app runs:
+Set `EXPO_PUBLIC_API_BASE_URL` in `.env` for the backend URL:
 
-- iOS simulator: `http://localhost:8001`
-- Android emulator: `http://10.0.2.2:8001`
-- Physical phone: `http://<your-computer-lan-ip>:8001`
+- Local website: `http://localhost:8001`
+- Deployed website: your deployed backend API origin
 
 ## Structure
 

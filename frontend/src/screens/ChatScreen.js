@@ -4,6 +4,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -18,7 +19,7 @@ const initialMessages = [
   {
     id: 'welcome',
     role: 'assistant',
-    text: 'Hello! I am Medibudi. Ask me a medical question and I will answer from the backend knowledge base.',
+    text: 'Hello! I am MediBot. Ask me a medical question and I will answer from the backend knowledge base.',
   },
 ];
 
@@ -63,38 +64,77 @@ export default function ChatScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
-      >
-        <View style={styles.header}>
-          <View style={styles.logo}>
-            <Text style={styles.logoText}>M</Text>
+      <View style={styles.page}>
+        <View style={styles.siteHeader}>
+          <View style={styles.brand}>
+            <View style={styles.logo}>
+              <Text style={styles.logoText}>M</Text>
+            </View>
+            <View>
+              <Text style={styles.title}>MediBot</Text>
+              <Text style={styles.subtitle}>Medical RAG Assistant</Text>
+            </View>
           </View>
-          <View>
-            <Text style={styles.title}>Medibudi</Text>
-            <Text style={styles.subtitle}>Medical RAG Assistant</Text>
+          <View style={styles.headerActions}>
+            <Text style={styles.statusDot}>●</Text>
+            <Text style={styles.statusText}>Backend ready</Text>
           </View>
         </View>
 
-        <FlatList
-          ref={listRef}
-          contentContainerStyle={styles.messages}
-          data={messages}
-          keyExtractor={(item) => item.id}
-          onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
-          renderItem={({ item }) => <ChatBubble message={item} />}
-        />
-
-        {isSending ? (
-          <View style={styles.loadingRow}>
-            <ActivityIndicator color="#0ea5e9" />
-            <Text style={styles.loadingText}>Medibudi is thinking...</Text>
+        <View style={styles.hero}>
+          <View style={styles.heroCopy}>
+            <Text style={styles.eyebrow}>Clinical knowledge support</Text>
+            <Text style={styles.heroTitle}>Ask medical questions from your browser.</Text>
+            <Text style={styles.heroText}>
+              MediBot connects to your backend knowledge base and keeps the chat experience optimized for desktop and tablet web users.
+            </Text>
           </View>
-        ) : null}
+          <View style={styles.heroStats}>
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>RAG</Text>
+              <Text style={styles.statLabel}>Grounded answers</Text>
+            </View>
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>Web</Text>
+              <Text style={styles.statLabel}>Responsive layout</Text>
+            </View>
+          </View>
+        </View>
 
-        <MessageInput disabled={isSending} onSend={handleSend} />
-      </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.chatShell}
+        >
+          <View style={styles.chatHeader}>
+            <View>
+              <Text style={styles.chatTitle}>MediBot Chat</Text>
+              <Text style={styles.chatSubtitle}>Responses are generated from the configured API.</Text>
+            </View>
+            <Pressable style={styles.secondaryButton} onPress={() => setMessages(initialMessages)}>
+              <Text style={styles.secondaryButtonText}>New chat</Text>
+            </Pressable>
+          </View>
+
+          <FlatList
+            ref={listRef}
+            contentContainerStyle={styles.messages}
+            data={messages}
+            keyExtractor={(item) => item.id}
+            onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
+            renderItem={({ item }) => <ChatBubble message={item} />}
+            style={styles.messageList}
+          />
+
+          {isSending ? (
+            <View style={styles.loadingRow}>
+              <ActivityIndicator color="#0891b2" />
+              <Text style={styles.loadingText}>MediBot is thinking...</Text>
+            </View>
+          ) : null}
+
+          <MessageInput disabled={isSending} onSend={handleSend} />
+        </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -102,25 +142,31 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#ecfeff',
   },
-  container: {
+  page: {
     flex: 1,
+    backgroundColor: '#ecfeff',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
   },
-  header: {
+  siteHeader: {
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderBottomColor: '#e2e8f0',
-    borderBottomWidth: 1,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    maxWidth: 1120,
+    width: '100%',
+  },
+  brand: {
+    alignItems: 'center',
     flexDirection: 'row',
     gap: 12,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
   },
   logo: {
     alignItems: 'center',
-    backgroundColor: '#0ea5e9',
-    borderRadius: 14,
+    backgroundColor: '#0891b2',
+    borderRadius: 12,
     height: 44,
     justifyContent: 'center',
     width: 44,
@@ -131,17 +177,141 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   title: {
-    color: '#0f172a',
+    color: '#164e63',
     fontSize: 20,
     fontWeight: '800',
   },
   subtitle: {
-    color: '#64748b',
+    color: '#475569',
     fontSize: 13,
     marginTop: 2,
   },
-  messages: {
+  headerActions: {
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderColor: '#bae6fd',
+    borderRadius: 999,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  statusDot: {
+    color: '#10b981',
+    fontSize: 12,
+  },
+  statusText: {
+    color: '#0f172a',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  hero: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    gap: 24,
+    justifyContent: 'space-between',
+    maxWidth: 1120,
+    paddingBottom: 24,
+    paddingTop: 52,
+    width: '100%',
+  },
+  heroCopy: {
+    flex: 1,
+    maxWidth: 650,
+  },
+  eyebrow: {
+    color: '#0891b2',
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0,
+    marginBottom: 10,
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    color: '#083344',
+    fontSize: 44,
+    fontWeight: '900',
+    lineHeight: 50,
+  },
+  heroText: {
+    color: '#475569',
+    fontSize: 17,
+    lineHeight: 26,
+    marginTop: 14,
+  },
+  heroStats: {
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  stat: {
+    backgroundColor: '#ffffff',
+    borderColor: '#bae6fd',
+    borderRadius: 8,
+    borderWidth: 1,
+    minWidth: 132,
     padding: 16,
+  },
+  statValue: {
+    color: '#0e7490',
+    fontSize: 24,
+    fontWeight: '900',
+  },
+  statLabel: {
+    color: '#475569',
+    fontSize: 13,
+    marginTop: 4,
+  },
+  chatShell: {
+    alignSelf: 'center',
+    backgroundColor: '#ffffff',
+    borderColor: '#bae6fd',
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    maxHeight: 720,
+    maxWidth: 1120,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  chatHeader: {
+    alignItems: 'center',
+    borderBottomColor: '#e2e8f0',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  chatTitle: {
+    color: '#0f172a',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  chatSubtitle: {
+    color: '#64748b',
+    fontSize: 13,
+    marginTop: 3,
+  },
+  secondaryButton: {
+    backgroundColor: '#f0fdfa',
+    borderColor: '#99f6e4',
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+  },
+  secondaryButtonText: {
+    color: '#0f766e',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  messageList: {
+    flex: 1,
+  },
+  messages: {
+    padding: 20,
   },
   loadingRow: {
     alignItems: 'center',
