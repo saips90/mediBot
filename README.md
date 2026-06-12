@@ -37,7 +37,15 @@ Qdrant Hybrid Retriever
   |-- Sparse keyword vectors: Qdrant/bm25
   |
   v
-Retrieved Context
+Top-k Retrieved Chunks
+  |
+  v
+Cross-Encoder Reranker
+  |-- Model: cross-encoder/ms-marco-MiniLM-L6-v2
+  |-- Keeps best RERANKER_TOP_N chunks
+  |
+  v
+Reranked Context
   |
   v
 Grounded Answer Prompt
