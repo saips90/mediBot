@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     qdrant_path: Path = ROOT_DIR / "qdrant_db"
     data_dir: Path = ROOT_DIR / "data" / "raw"
     retrieval_k: int = 5
+    reranker_enabled: bool = True
+    reranker_model: str = "cross-encoder/ms-marco-MiniLM-L6-v2"
+    reranker_top_n: int = 3
 
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",

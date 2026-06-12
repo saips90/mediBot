@@ -7,6 +7,7 @@ from app.core.config import Settings, get_settings
 from app.core.security import validate_api_keys
 from app.generation.llm import build_llm
 from app.generation.prompts import ANSWER_PROMPT, QUERY_REWRITE_PROMPT
+from app.retrieval.reranker import build_reranker
 from app.retrieval.retriever import build_retriever
 
 
@@ -46,11 +47,13 @@ class MediBotRAG:
 
         self.llm = build_llm(self.settings)
         self.retriever = build_retriever(self.settings)
+        self.reranker = build_reranker(self.settings)
         self.query_rewriter = QUERY_REWRITE_PROMPT | self.llm | StrOutputParser()
 
         def retrieve_with_rewrite(inputs):
             rewritten = self.query_rewriter.invoke({"question": inputs["question"]})
             docs = self.retriever.invoke(rewritten)
+            docs = self.reranker.rerank(docs, rewritten)
             return {"context": docs, "question": inputs["question"]}
 
         self.chain = (

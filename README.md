@@ -99,6 +99,9 @@ COLLECTION_NAME=medibudi
 DATA_DIR=/path/to/your/document/folder
 QDRANT_PATH=qdrant_db
 RETRIEVAL_K=5
+RERANKER_ENABLED=true
+RERANKER_MODEL=cross-encoder/ms-marco-MiniLM-L6-v2
+RERANKER_TOP_N=3
 ```
 
 Install backend dependencies:
@@ -400,22 +403,35 @@ Answer: General ward is eligible when the sum insured is under ₹3 lakh...
 
 ## Reranking
 
-The repo includes a reranker extension point, currently implemented as a no-op.
+The repo includes an optional cross-encoder reranker after Qdrant retrieval.
+
+Current reranker:
+
+```text
+cross-encoder/ms-marco-MiniLM-L6-v2
+```
+
+Flow:
+
+1. Qdrant hybrid retrieval returns the top `RETRIEVAL_K` candidate chunks.
+2. The reranker scores each `(query, chunk)` pair.
+3. The backend keeps the best `RERANKER_TOP_N` chunks.
+4. Only reranked context is sent to the answer prompt.
 
 Why reranking is useful:
 
 - The initial retriever may return a broad set of candidates.
-- A cross-encoder reranker can compare the query and each chunk more carefully.
+- The cross-encoder reranker can compare the query and each chunk more carefully than vector similarity alone.
 - This improves precision, especially when many chunks contain similar terms.
 
-When I would add reranking:
+When reranking helps most:
 
 - When the corpus grows larger.
 - When top retrieved chunks are often related but not exact.
 - When similar documents contain conflicting policy details.
 - When high precision matters more than latency.
 
-Candidate rerankers:
+Candidate alternatives:
 
 - BAAI/bge-reranker-base.
 - Cohere rerank.
@@ -597,7 +613,7 @@ Retrieval top-k controls how many chunks are returned. Generation top-k/top-p ar
 
 ### Why is reranking needed?
 
-Reranking improves precision after retrieval. It is useful when many chunks are similar or when the corpus grows.
+Reranking improves precision after retrieval. Qdrant quickly finds likely candidates, then the cross-encoder reranker performs a deeper query-vs-chunk relevance check and keeps the best chunks for generation.
 
 ### What retriever did you build?
 
@@ -645,7 +661,6 @@ The prompt asks for plain text, and the backend removes Markdown artifacts befor
 
 ## Known Limitations
 
-- Reranking is currently a no-op extension point.
 - No citation rendering in the frontend yet.
 - Metadata filters are not exposed through the API yet.
 - Evaluation scripts are not yet included.
@@ -655,7 +670,6 @@ The prompt asks for plain text, and the backend removes Markdown artifacts befor
 ## Future Improvements
 
 - Add source citations in answers.
-- Add a real reranker.
 - Add retrieval evaluation with a small golden Q&A set.
 - Add metadata filters by department or document type.
 - Add streaming responses.
