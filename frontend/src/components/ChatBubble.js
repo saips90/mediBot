@@ -2,11 +2,25 @@ import { StyleSheet, Text, View } from 'react-native';
 
 export default function ChatBubble({ message }) {
   const isUser = message.role === 'user';
+  const hasMeta = !isUser && (message.retrievalType || message.sources?.length);
 
   return (
     <View style={[styles.row, isUser ? styles.userRow : styles.assistantRow]}>
       <View style={[styles.bubble, isUser ? styles.userBubble : styles.assistantBubble]}>
         <Text style={[styles.text, isUser ? styles.userText : styles.assistantText]}>{message.text}</Text>
+        {hasMeta ? (
+          <View style={styles.meta}>
+            {message.retrievalType ? (
+              <Text style={styles.metaText}>Retrieval: {message.retrievalType}</Text>
+            ) : null}
+            {message.sources?.slice(0, 3).map((source, index) => (
+              <Text key={`${source.source_document}-${index}`} style={styles.metaText}>
+                Source: {source.source_document}
+                {source.section_title ? ` · ${source.section_title}` : ''}
+              </Text>
+            ))}
+          </View>
+        ) : null}
       </View>
     </View>
   );
@@ -46,5 +60,16 @@ const styles = StyleSheet.create({
   },
   assistantText: {
     color: '#0f172a',
+  },
+  meta: {
+    borderTopColor: '#cbd5e1',
+    borderTopWidth: 1,
+    marginTop: 12,
+    paddingTop: 10,
+  },
+  metaText: {
+    color: '#475569',
+    fontSize: 12,
+    lineHeight: 18,
   },
 });

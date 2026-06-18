@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.core.logger import get_logger
+from app.core.session import SessionStore
 from app.rag_pipeline import MediBotRAG
+from app.sql_rag import SQLRAG
 
 settings = get_settings()
 logger = get_logger(__name__)
@@ -15,8 +17,11 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.rag_pipeline = None
+    app.state.sql_rag = None
+    app.state.sessions = SessionStore()
     try:
         app.state.rag_pipeline = MediBotRAG(settings)
+        app.state.sql_rag = SQLRAG(settings)
         logger.info("MediBot RAG Pipeline initialized successfully")
     except Exception as exc:
         logger.warning("RAG Pipeline initialization failed. Did you run ingest.py? Error: %s", exc)
@@ -33,6 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(api_router)
 app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 
@@ -42,7 +48,9 @@ async def root():
         "name": settings.app_name,
         "status": "ok",
         "docs": "/docs",
-        "chat_endpoint": f"{settings.api_v1_prefix}/chat",
+        "login_endpoint": "/login",
+        "chat_endpoint": "/chat",
+        "legacy_chat_endpoint": f"{settings.api_v1_prefix}/chat",
     }
 
 

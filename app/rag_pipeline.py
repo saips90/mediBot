@@ -7,8 +7,9 @@ from app.core.config import Settings, get_settings
 from app.core.security import validate_api_keys
 from app.generation.llm import build_llm
 from app.generation.prompts import ANSWER_PROMPT, QUERY_REWRITE_PROMPT
+from app.ingestion.vector_db import get_vectorstore
 from app.retrieval.reranker import build_reranker
-from app.retrieval.retriever import build_retriever
+from app.retrieval.retriever import build_role_filter
 
 
 def format_plain_text(answer: str) -> str:
@@ -46,7 +47,8 @@ class MediBotRAG:
         validate_api_keys(self.settings)
 
         self.llm = build_llm(self.settings)
-        self.retriever = build_retriever(self.settings)
+        self.vectorstore = get_vectorstore(self.settings)
+        self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": self.settings.retrieval_k})
         self.reranker = build_reranker(self.settings)
         self.query_rewriter = QUERY_REWRITE_PROMPT | self.llm | StrOutputParser()
 
@@ -65,3 +67,49 @@ class MediBotRAG:
 
     def ask(self, question: str) -> str:
         return format_plain_text(self.chain.invoke({"question": question}))
+
+    def ask_with_role(self, question: str, role: str) -> dict[str, object]:
+        rewritten = self.query_rewriter.invoke({"question": question})
+        role_filter = build_role_filter(role)
+        docs = self.vectorstore.similarity_search(
+            rewritten,
+            k=self.settings.retrieval_k,
+            filter=role_filter,
+        )
+        docs = self.reranker.rerank(docs, rewritten)
+
+        answer = (
+            ANSWER_PROMPT
+            | self.llm
+            | StrOutputParser()
+        ).invoke({"context": docs, "question": question})
+
+        sources = []
+        seen = set()
+        for document in docs:
+            metadata = document.metadata
+            key = (
+                metadata.get("source_document"),
+                metadata.get("section_title"),
+                metadata.get("collection"),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            sources.append(
+                {
+                    "source_document": metadata.get("source_document") or metadata.get("source"),
+                    "section_title": metadata.get("section_title"),
+                    "collection": metadata.get("collection"),
+                    "chunk_type": metadata.get("chunk_type"),
+                    "reranker_score": metadata.get("reranker_score"),
+                }
+            )
+
+        return {
+            "answer": format_plain_text(answer),
+            "sources": sources,
+            "retrieval_type": "hybrid_vector_reranked",
+            "role": role,
+            "rewritten_query": rewritten,
+        }

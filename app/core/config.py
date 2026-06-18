@@ -1,4 +1,5 @@
 from functools import lru_cache
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -22,7 +23,8 @@ class Settings(BaseSettings):
     collection_name: str = "medibudi"
     qdrant_path: Path = ROOT_DIR / "qdrant_db"
     data_dir: Path = ROOT_DIR / "data" / "raw"
-    retrieval_k: int = 5
+    sqlite_db_path: Path = ROOT_DIR / "data" / "raw" / "db" / "mediassist.db"
+    retrieval_k: int = 10
     reranker_enabled: bool = True
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L6-v2"
     reranker_top_n: int = 3
@@ -35,10 +37,14 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def resolve_paths(self):
-        for field_name in ("qdrant_path", "data_dir"):
+        for field_name in ("qdrant_path", "data_dir", "sqlite_db_path"):
             path = getattr(self, field_name)
             if not path.is_absolute():
                 setattr(self, field_name, ROOT_DIR / path)
+        if "SQLITE_DB_PATH" not in os.environ:
+            default_db_path = ROOT_DIR / "data" / "raw" / "db" / "mediassist.db"
+            if self.sqlite_db_path == default_db_path:
+                self.sqlite_db_path = self.data_dir / "db" / "mediassist.db"
         return self
 
 

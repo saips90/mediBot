@@ -14,10 +14,10 @@ def ingest_data(settings: Settings | None = None) -> None:
     documents = load_documents(settings.data_dir)
     logger.info("Loaded %s documents", len(documents))
 
-    logger.info("Initializing embeddings for semantic chunking")
+    logger.info("Initializing embeddings")
     embeddings = build_dense_embeddings(settings)
 
-    logger.info("Semantically chunking text")
+    logger.info("Applying bounded text splitting to oversized chunks")
     chunks = chunk_documents(documents, embeddings)
     logger.info("Split into %s semantic chunks", len(chunks))
 
