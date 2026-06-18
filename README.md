@@ -47,22 +47,38 @@ The SQLite database contains:
 
 ```mermaid
 flowchart TD
-    U["User in Expo Web UI"] --> L["Demo Login"]
-    L --> R["Role Token"]
-    R --> C["POST /chat"]
-    C --> G{"Question Type"}
-    G -->|"Document / policy / clinical"| V["Qdrant Hybrid Retrieval"]
-    G -->|"Claims / tickets analytics"| S["SQL RAG"]
-    V --> F["RBAC Metadata Filter"]
-    F --> H["Dense + Sparse Search"]
-    H --> K["Top-k Candidates"]
-    K --> X["Cross-Encoder Reranker"]
-    X --> A["Grounded Answer Prompt"]
-    S --> Q["Generate Safe SELECT SQL"]
-    Q --> E["Execute SQLite Read-only"]
-    E --> A
-    A --> O["Answer + Sources + Role + Retrieval Type"]
-    O --> U
+    user[User in Expo Web UI]
+    login[Demo login]
+    token[Role token]
+    chat[POST chat]
+    router[Question router]
+    vector[Qdrant hybrid retrieval]
+    filter[RBAC metadata filter]
+    search[Dense and sparse search]
+    candidates[Top k candidates]
+    reranker[Cross encoder reranker]
+    sqlrag[SQL RAG]
+    sql[Generate safe SELECT SQL]
+    sqlite[Execute SQLite read only]
+    answer[Grounded answer prompt]
+    response[Answer with sources role and retrieval type]
+
+    user --> login
+    login --> token
+    token --> chat
+    chat --> router
+    router --> vector
+    router --> sqlrag
+    vector --> filter
+    filter --> search
+    search --> candidates
+    candidates --> reranker
+    reranker --> answer
+    sqlrag --> sql
+    sql --> sqlite
+    sqlite --> answer
+    answer --> response
+    response --> user
 ```
 
 ## Role Access
@@ -405,11 +421,18 @@ SQL RAG flow:
 
 ```mermaid
 flowchart TD
-    Q["User Question"] --> P["SQL Prompt"]
-    P --> S["Generate SQLite SELECT"]
-    S --> C["Clean and Validate SQL"]
-    C --> D["Execute against mediassist.db"]
-    D --> A["LLM summarizes rows"]
+    question[User question]
+    prompt[SQL prompt]
+    select[Generate SQLite SELECT]
+    validate[Clean and validate SQL]
+    execute[Execute against mediassist db]
+    summarize[LLM summarizes rows]
+
+    question --> prompt
+    prompt --> select
+    select --> validate
+    validate --> execute
+    execute --> summarize
 ```
 
 Safety controls:
